@@ -1,8 +1,8 @@
 package com.jnsdev.cursoudemy.msclientes.application;
 
 import com.jnsdev.cursoudemy.msclientes.application.representation.ClienteSaveRequest;
-import com.jnsdev.cursoudemy.msclientes.domain.Cliente;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -14,6 +14,7 @@ import java.net.URI;
  * @Created 06/12/2023 - 17:13
  */
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("clientes")
@@ -23,6 +24,7 @@ public class ClienteResource {
 
     @GetMapping
     public String status() {
+        log.info("Obtendo o status do microserevice de cliente");
         return "OK";
     }
 
@@ -43,7 +45,7 @@ public class ClienteResource {
     public ResponseEntity dadosCliente(@RequestParam("cpf") String cpf) {
         var cliente = service.getByCPF(cpf);
 
-        if(cliente.isEmpty()) return ResponseEntity.notFound().build();
+        if (cliente.isEmpty()) return ResponseEntity.notFound().build();
 
         return ResponseEntity.ok(cliente);
     }
