@@ -1,6 +1,6 @@
 # Domine Microserviços e Mensageria com spring Cloud e Docker
 
-## Autor: Dougllas Sousa
+## Autor: Douglas Sousa
 
 ## Endereço: [Udemy](https://www.udemy.com/course/domine-microservicos-e-mensageria-com-spring-cloud-e-docker/)
 
