@@ -17,5 +17,34 @@ Aprenda a construir um arquitetura completa com Microservices, Serviços de Mens
 - Authorization Server com Keycloak
 - Buildar Imagens Docker e criar containers a partir delas
 
+# Clientes Microservice
 
+ 1. Salvar Cliente:
+  POST
+  input - JSON: { cpf: string, nome: string, idade: int }
+  output: Header Location
+
+2. Obter dados Cliente por CPF:
+   GET
+   input - Request Param: { cpf }
+   output: { id: int, cpf: string, nome: string, idade: int }
+
+# Cartões Microservice
+
+ 1. Cadastra Cartao:
+  POST
+  input - JSON: { nome: string, bandeira: string, renda: number,
+  limite: number }
+  output: Created - No content
+  
+ 2. Listar Cartões por renda até:
+  GET
+  input - Request Param: { renda: number }
+  output: [{ id: int, nome: string, bandeira: string, renda: number,
+  limiteBasico: number }]
+
+3. Lista Cartões Por Cliente:
+  GET
+  input - Request Param: { cpf }
+  output: nome: string, bandeira: string, limite: number  
 
