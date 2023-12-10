@@ -23,5 +23,8 @@ public class ClienteCartao {
     @ManyToOne
     @JoinColumn(name = "id_cartao")
     private Cartao cartao;
+
     private BigDecimal limite;
+
+    private String endereco;
 }

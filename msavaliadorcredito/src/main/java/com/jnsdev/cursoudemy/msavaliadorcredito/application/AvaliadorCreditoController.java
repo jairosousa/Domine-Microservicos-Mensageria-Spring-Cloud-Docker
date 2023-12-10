@@ -1,10 +1,12 @@
 package com.jnsdev.cursoudemy.msavaliadorcredito.application;
 
 import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.DadosAvaliacao;
+import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.DadosSolicitacaoEmissaoCartao;
 import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.RetornoAvaliacaoCliente;
 import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.SituacaoCliente;
 import com.jnsdev.cursoudemy.msavaliadorcredito.exception.DadosClienteNotFoundException;
 import com.jnsdev.cursoudemy.msavaliadorcredito.exception.ErroCominicacaoMicroservicesException;
+import com.jnsdev.cursoudemy.msavaliadorcredito.exception.ErroSolicitacaoCartaoException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -39,7 +41,7 @@ public class AvaliadorCreditoController {
             log.error(e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (ErroCominicacaoMicroservicesException e) {
-            log.error(e.getMessage(),e.getStatus());
+            log.error(e.getMessage(), e.getStatus());
             return ResponseEntity.status(HttpStatus.resolve(e.getStatus())).body(e.getMessage());
         }
     }
@@ -54,8 +56,18 @@ public class AvaliadorCreditoController {
             log.error(e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (ErroCominicacaoMicroservicesException e) {
-            log.error(e.getMessage(),e.getStatus());
+            log.error(e.getMessage(), e.getStatus());
             return ResponseEntity.status(HttpStatus.resolve(e.getStatus())).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("solicitacao-cartao")
+    public ResponseEntity solictarCartao(@RequestBody DadosSolicitacaoEmissaoCartao dados) {
+        try {
+            var protocoloSolicitacaoCartao = avaliadorCreditoService.solictarEmissaoCartao(dados);
+            return ResponseEntity.ok(protocoloSolicitacaoCartao);
+        } catch (ErroSolicitacaoCartaoException ex) {
+            return ResponseEntity.internalServerError().body(ex.getMessage());
         }
     }
 }

@@ -3,8 +3,10 @@ package com.jnsdev.cursoudemy.msavaliadorcredito.application;
 import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.*;
 import com.jnsdev.cursoudemy.msavaliadorcredito.exception.DadosClienteNotFoundException;
 import com.jnsdev.cursoudemy.msavaliadorcredito.exception.ErroCominicacaoMicroservicesException;
+import com.jnsdev.cursoudemy.msavaliadorcredito.exception.ErroSolicitacaoCartaoException;
 import com.jnsdev.cursoudemy.msavaliadorcredito.infra.clients.CartoesResourdeClient;
 import com.jnsdev.cursoudemy.msavaliadorcredito.infra.clients.ClienteResourceClient;
+import com.jnsdev.cursoudemy.msavaliadorcredito.infra.mqueue.SolicitacaoEmissaoCartaoPublisher;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -26,6 +29,7 @@ public class AvaliadorCreditoService {
 
     private final ClienteResourceClient clienteClient;
     private final CartoesResourdeClient cartoesClient;
+    private final SolicitacaoEmissaoCartaoPublisher emissaoCartaoPublisher;
 
     public SituacaoCliente obterSituacaoCliente(String cpf) throws DadosClienteNotFoundException, ErroCominicacaoMicroservicesException {
         try {
@@ -79,6 +83,15 @@ public class AvaliadorCreditoService {
             }
 
             throw new ErroCominicacaoMicroservicesException(e.getMessage(), status);
+        }
+    }
+
+    public ProtocoloSolicitacaoCartao solictarEmissaoCartao(DadosSolicitacaoEmissaoCartao dados) {
+        try {
+            emissaoCartaoPublisher.solictarCartao(dados);
+            return new ProtocoloSolicitacaoCartao(UUID.randomUUID().toString());
+        } catch (Exception ex) {
+            throw new ErroSolicitacaoCartaoException(ex.getMessage());
         }
     }
 }
