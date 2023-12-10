@@ -165,6 +165,12 @@ output - JSON
 
 # latest RabbitMQ 3.12
 ```
-docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management
+docker run -it --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.12-management
 ```
 senha: guest
+
+# Autenticacao Keycloak
+
+```
+docker run --name keycloak -p 8081:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:18.0.0 start-dev
+```
