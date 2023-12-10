@@ -4,12 +4,11 @@ import lombok.Data;
 
 /**
  * @Autor Jairo Nascimento
- * @Created 09/12/2023 - 08:34
+ * @Created 10/12/2023 - 09:59
  */
 
 @Data
-public class DadosCliente {
-    private Long id;
+public class DadosAvaliacao {
     private String cpf;
-    private Integer idade;
+    private Long renda;
 }

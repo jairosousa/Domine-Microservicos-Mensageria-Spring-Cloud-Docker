@@ -1,5 +1,6 @@
 package com.jnsdev.cursoudemy.msavaliadorcredito.infra.clients;
 
+import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.Cartao;
 import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.CartaoCliente;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -18,4 +19,7 @@ public interface CartoesResourdeClient {
 
     @GetMapping(params = "cpf")
     ResponseEntity<List<CartaoCliente>> getCartoesByCliente(@RequestParam("cpf")String cpf);
+
+    @GetMapping(params = "renda")
+    public ResponseEntity<List<Cartao>> getCartoesRendaAteh(@RequestParam("renda") Long renda);
 }

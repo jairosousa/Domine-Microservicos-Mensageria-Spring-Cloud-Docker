@@ -1,8 +1,6 @@
 package com.jnsdev.cursoudemy.msavaliadorcredito.application;
 
-import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.CartaoCliente;
-import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.DadosCliente;
-import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.SituacaoCliente;
+import com.jnsdev.cursoudemy.msavaliadorcredito.domain.model.*;
 import com.jnsdev.cursoudemy.msavaliadorcredito.exception.DadosClienteNotFoundException;
 import com.jnsdev.cursoudemy.msavaliadorcredito.exception.ErroCominicacaoMicroservicesException;
 import com.jnsdev.cursoudemy.msavaliadorcredito.infra.clients.CartoesResourdeClient;
@@ -13,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Autor Jairo Nascimento
@@ -39,6 +39,39 @@ public class AvaliadorCreditoService {
                     .cliente(dadosClienteResponse.getBody())
                     .cartoes(cartoesResponse.getBody())
                     .build();
+        } catch (FeignException.FeignClientException e) {
+            int status = e.status();
+            if (HttpStatus.NOT_FOUND.value() == status) {
+                throw new DadosClienteNotFoundException(cpf);
+            }
+
+            throw new ErroCominicacaoMicroservicesException(e.getMessage(), status);
+        }
+    }
+
+    public RetornoAvaliacaoCliente realizarAvaliacao(String cpf, Long renda) throws DadosClienteNotFoundException, ErroCominicacaoMicroservicesException {
+        try {
+            ResponseEntity<DadosCliente> dadosClienteResponse = clienteClient.dadosCliente(cpf);
+            ResponseEntity<List<Cartao>> cartoesResponse = cartoesClient.getCartoesRendaAteh(renda);
+
+            var listaCartoesAprovado = cartoesResponse.getBody().stream().map(cartao -> {
+                DadosCliente dadosCliente = dadosClienteResponse.getBody();
+
+                BigDecimal limiteBasico = cartao.getLimiteBanco();
+                BigDecimal idadeBD = BigDecimal.valueOf(dadosCliente.getIdade());
+                BigDecimal fator = idadeBD.divide(BigDecimal.valueOf(10));
+                BigDecimal limiteAprovado = fator.multiply(limiteBasico);
+
+                CartaoAprovado aprovado = new CartaoAprovado();
+                aprovado.setCartao(cartao.getNome());
+                aprovado.setBandeira(cartao.getBandeira());
+                aprovado.setLimiteAprovado(limiteAprovado);
+
+                return aprovado;
+            }).collect(Collectors.toList());
+
+            return new RetornoAvaliacaoCliente(listaCartoesAprovado);
+
         } catch (FeignException.FeignClientException e) {
             int status = e.status();
             if (HttpStatus.NOT_FOUND.value() == status) {
